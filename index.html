@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071b26">
+    <meta name="description" content="Explore observed temperature trends in Egypt using monthly NASA POWER climate data.">
+    <title>Egypt Climate Trends — Is Egypt Getting Hotter?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="Egypt Climate Trends home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Egypt <strong>Climate</strong></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <span></span><span></span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
+        <a href="#home">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#analysis">Analysis</a>
+        <a href="#about">About project</a>
+      </nav>
+      <a class="header-source" href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">
+        <span class="live-dot" aria-hidden="true"></span> NASA POWER data
+      </a>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow"><span class="eyebrow-line"></span> Climate, observed</p>
+          <h1>Is Egypt<br>getting <span>hotter?</span></h1>
+          <p class="hero-copy">Explore NASA temperature observations and see how the story changes across cities and years.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#dashboard">Explore climate data <span aria-hidden="true">↘</span></a>
+            <a class="text-link" href="#about">How this works <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="hero-meta"><span class="meta-icon" aria-hidden="true">◎</span> Monthly observations · 5 Egyptian cities</div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="earth">
+            <div class="earth-land"></div>
+            <div class="earth-glow"></div>
+          </div>
+          <div class="visual-label label-top"><span></span> N 30° 02' · E 31° 14'</div>
+          <div class="visual-label label-bottom">NILE DELTA <span>—</span> NORTH AFRICA</div>
+          <div class="temperature-chip"><span class="chip-sun" aria-hidden="true">☼</span><span><b>Earth observation</b><small>NASA POWER · T2M</small></span></div>
+        </div>
+        <div class="hero-bottom">
+          <span>01 — The question</span>
+          <span>Long-term climate patterns, one city at a time</span>
+          <a href="#dashboard" aria-label="Scroll to dashboard">↓</a>
+        </div>
+      </section>
+
+      <section class="dashboard-section section-wrap" id="dashboard">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> Explore the data</p>
+            <h2>Climate dashboard<span class="heading-period">.</span></h2>
+          </div>
+          <button class="button button-outline refresh-button" id="refresh-button" type="button">
+            <span class="refresh-icon" aria-hidden="true">↻</span> Refresh data
+          </button>
+        </div>
+
+        <div class="control-bar">
+          <label class="control-field city-field" for="city-select">
+            <span class="control-label">Location</span>
+            <span class="select-wrap">
+              <select id="city-select" name="city">
+                <option value="cairo">Cairo</option>
+                <option value="alexandria">Alexandria</option>
+                <option value="sohag">Sohag</option>
+                <option value="aswan">Aswan</option>
+                <option value="luxor">Luxor</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">⌄</span>
+            </span>
+          </label>
+          <div class="control-divider" aria-hidden="true"></div>
+          <label class="control-field year-field" for="start-year">
+            <span class="control-label">From</span>
+            <span class="number-wrap"><input id="start-year" type="number" min="1981" max="2025" value="2001" inputmode="numeric"><span>year</span></span>
+          </label>
+          <span class="range-dash" aria-hidden="true">—</span>
+          <label class="control-field year-field" for="end-year">
+            <span class="control-label">To</span>
+            <span class="number-wrap"><input id="end-year" type="number" min="1981" max="2025" value="2025" inputmode="numeric"><span>year</span></span>
+          </label>
+          <div class="control-context">
+            <span class="context-dot" aria-hidden="true"></span>
+            <span>Monthly air temperature<br><b>2 m above ground · °C</b></span>
+          </div>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+
+        <div class="data-status" id="data-status" role="status" aria-live="polite">
+          <span class="status-spinner" aria-hidden="true"></span>
+          <span>Connecting to NASA POWER…</span>
+        </div>
+
+        <div class="dashboard-content" id="dashboard-content" hidden>
+          <div class="dashboard-caption">
+            <div><span class="caption-location" id="caption-location">Cairo, Egypt</span><span class="caption-coordinates" id="caption-coordinates"></span></div>
+            <span class="period-badge" id="period-badge"></span>
+          </div>
+          <div class="stats-grid">
+            <article class="stat-card stat-primary">
+              <span class="stat-label">Mean annual temperature</span>
+              <div class="stat-value"><span id="mean-temp">—</span><span class="stat-unit">°C</span></div>
+              <span class="stat-note">Average of annual averages</span>
+              <span class="stat-icon" aria-hidden="true">°</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Warmest year</span>
+              <div class="stat-value"><span id="warmest-temp">—</span><span class="stat-unit">°C</span></div>
+              <span class="stat-note" id="warmest-year">—</span>
+              <span class="stat-icon warm-icon" aria-hidden="true">↗</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Coolest year</span>
+              <div class="stat-value"><span id="coolest-temp">—</span><span class="stat-unit">°C</span></div>
+              <span class="stat-note" id="coolest-year">—</span>
+              <span class="stat-icon cool-icon" aria-hidden="true">↘</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Change · first to last</span>
+              <div class="stat-value"><span id="total-change">—</span><span class="stat-unit">°C</span></div>
+              <span class="stat-note" id="change-years">Selected period</span>
+              <span class="stat-icon change-icon" aria-hidden="true">±</span>
+            </article>
+            <article class="stat-card trend-card">
+              <span class="stat-label">Long-term trend</span>
+              <div class="trend-value" id="trend-label"><span class="trend-indicator"></span><span>—</span></div>
+              <span class="stat-note" id="trend-rate">—</span>
+              <span class="stat-icon trend-icon" aria-hidden="true">⌁</span>
+            </article>
+          </div>
+
+          <div class="charts-grid">
+            <article class="chart-card chart-wide">
+              <div class="chart-heading">
+                <div><span class="chart-kicker">01 / YEAR BY YEAR</span><h3>Annual average temperature</h3></div>
+                <span class="chart-unit">°C</span>
+              </div>
+              <p class="chart-description">Each annual value is weighted by the number of days in each valid month.</p>
+              <div class="chart-container"><canvas id="annual-chart" role="img" aria-label="Line chart of annual average temperature"></canvas></div>
+            </article>
+            <article class="chart-card">
+              <div class="chart-heading">
+                <div><span class="chart-kicker">02 / SEASONAL PROFILE</span><h3>Monthly averages</h3></div>
+                <span class="chart-unit">°C</span>
+              </div>
+              <p class="chart-description">Average for each calendar month across selected years.</p>
+              <div class="chart-container chart-container-small"><canvas id="monthly-chart" role="img" aria-label="Line chart of average monthly temperature"></canvas></div>
+            </article>
+            <article class="chart-card">
+              <div class="chart-heading">
+                <div><span class="chart-kicker">03 / LINEAR REGRESSION</span><h3>Temperature trend</h3></div>
+                <span class="chart-unit">°C / yr</span>
+              </div>
+              <p class="chart-description">Observed annual values with a least-squares linear fit.</p>
+              <div class="chart-container chart-container-small"><canvas id="trend-chart" role="img" aria-label="Line chart showing annual temperatures and a linear regression trendline"></canvas></div>
+            </article>
+          </div>
+          <p class="coverage-note" id="coverage-note"></p>
+        </div>
+      </section>
+
+      <section class="analysis-section" id="analysis">
+        <div class="section-wrap analysis-wrap">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line"></span> Read the signal</p>
+              <h2>What did we discover<span class="heading-period">?</span></h2>
+            </div>
+            <span class="analysis-tag">DATA-LED INSIGHTS</span>
+          </div>
+          <div class="findings-grid" id="findings-grid">
+            <article class="finding-card finding-lead">
+              <span class="finding-index">01 <span>— OVERALL PATTERN</span></span>
+              <p id="finding-trend">Waiting for observations…</p>
+            </article>
+            <article class="finding-card">
+              <span class="finding-index">02 <span>— WARMEST YEAR</span></span>
+              <p id="finding-warmest">—</p>
+            </article>
+            <article class="finding-card">
+              <span class="finding-index">03 <span>— COOLEST YEAR</span></span>
+              <p id="finding-coolest">—</p>
+            </article>
+            <article class="finding-card">
+              <span class="finding-index">04 <span>— OBSERVED CHANGE</span></span>
+              <p id="finding-change">—</p>
+            </article>
+          </div>
+          <div class="science-note">
+            <span class="science-icon" aria-hidden="true">i</span>
+            <p><strong>A note on interpretation</strong> — This is an observed temperature trend for one selected location, not proof of a specific cause and not a proxy for all of Egypt. Monthly averages describe climate patterns; they do not reveal individual heatwaves or daily extremes. The dashboard labels the fitted trend stable when its slope is within ±0.01 °C per year.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section section-wrap" id="about">
+        <div class="about-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> About the project</p>
+          <h2>Making climate<br>data <span>understandable.</span></h2>
+          <p>This project investigates historical temperature changes in Egypt using NASA POWER climate data. By collecting, processing, and visualizing historical temperature observations, it aims to identify long-term patterns and make climate data easier to understand.</p>
+          <a class="text-link nasa-link" href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">Visit NASA POWER <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="about-details">
+          <div class="about-detail"><span>DATA PROVIDER</span><strong>NASA</strong></div>
+          <div class="about-detail"><span>PLATFORM</span><strong>NASA POWER</strong></div>
+          <div class="about-detail"><span>PARAMETER</span><strong>T2M · Temperature at 2 m</strong></div>
+          <div class="about-detail"><span>UNIT & RESOLUTION</span><strong>°C · Monthly</strong></div>
+          <div class="about-detail"><span>PROJECT PURPOSE</span><strong>Historical climate trend analysis</strong></div>
+          <p class="about-footnote">The selected location's coordinates, analyzed years, and data coverage are shown with the dashboard results. Annual averages use day-weighted valid monthly observations, including leap-year days.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#home"><span class="brand-mark" aria-hidden="true"><span></span></span><span>Egypt <strong>Climate</strong></span></a>
+      <span>Observed data. Clear context. Better questions.</span>
+      <span>Source: <a href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">NASA POWER</a></span>
+    </footer>
+  </body>
+</html>
